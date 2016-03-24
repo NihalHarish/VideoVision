@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+
+    <title>Console</title>
+
+    <style type="text/css">
+        html {
+            background-color: #000;
+        }
+        body {
+            font-family: "Lucida Console";
+            font-size: 13px;
+            color: #0f0;
+        }
+        #in {
+            display: block;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            padding: 8px;
+            border-color: #fff;
+            border-width: 1px 0 0 0;
+            background-color: #000;
+            color: #0f0;
+        }
+    </style>
+</head>
+<body>
+    <div id="out"></div>
+    <input id="in" tabindex="0"/>
+</body>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script type="text/javascript">
+ 
+        var COMMANDS = [
+        {
+            name: "echo",
+            handler: echo
+        },
+
+        {
+            name: "greet",
+            handler: function(args) {
+                outputToConsole("Hello " + args[0] + ", welcome to Console.");
+            }
+        }
+        ];
+
+        function processCommand() {
+            
+            var input = $("#in").val();
+            var parts = input.replace(/\s+/g, " ").split(" ");
+            var command = parts[0];
+            var args = parts.length > 1 ? parts.slice(1, parts.length) : [];
+
+            $("#in").val("");
+
+            for (var i = 0; i < COMMANDS.length; i++) {
+                if (command === COMMANDS[i].name) {
+                    COMMANDS[i].handler(args);
+                    return;
+                }
+            }
+
+            outputToConsole("Unsupported Command: " + command);
+        }
+
+        function echo(args) {
+            outputToConsole(args);
+        }
+
+        function outputToConsole(text) {
+            var p = "<p>" + text + "</p>";
+            $("#out").append(p);                
+        }
+
+
+        $(document).ready(function(){
+            $("#in").keypress(function(e){
+                var code = e.keyCode || e.which;
+                if(code == 13){
+                    processCommand();
+                }
+            });
+        });
+    </script>
+    </html>
