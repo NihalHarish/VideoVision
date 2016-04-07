@@ -1,7 +1,7 @@
 # Place this file in the folder 'VIRAT Ground Dataset' ie. the folder that contains 'annotations'
 import cv2
 import time
-files = ['VIRAT_S_000200_00_000100_000171.mp4'] #add the names of files you wish to annotate
+files = ["VIRAT_S_050301_00_000000_000036.mp4", "VIRAT_S_050301_01_000083_000320.mp4", "VIRAT_S_050301_02_000544_000607.mp4", "VIRAT_S_050301_03_000933_001046.mp4"] #add the names of files you wish to annotate
 for fname in files:
     file_name = "annotations/" + fname.split(".")[0] + ".viratdata.objects.txt"
     video_name = "videos_original/" + fname
@@ -28,9 +28,11 @@ for fname in files:
         print("*"*50)
         print(line)
         print("*"*50)
+        cv2.namedWindow('img', cv2.WINDOW_NORMAL)
         if flag:
             img2 = cv2.rectangle(frame, (x, y), (x + w, y + h), 255, 2)
             cv2.imshow('img', img2)
+            cv2.resizeWindow('img', 1500, 1000)
             #cv2.imshow('video', frame)
             cap.set(cv2.CAP_PROP_POS_FRAMES, frame_num)
             cv2.waitKey(1000)
