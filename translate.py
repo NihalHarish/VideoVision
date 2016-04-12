@@ -40,7 +40,7 @@ def find_from_phrase(query):
 def find_where_phrase(query):
     return find_between(query, "WHERE ", "").strip()
 
-def create_match_phrase(from_phrase, obj_alias):
+def create_match_phrase(from_phrase, obj_alias, select_phrase, is_frame_query):
     match_phrase = ""
     if "object" in from_phrase and "event" in from_phrase:
         match_phrase = "MATCH (v:Video)-[r1:has_event]->(e:Event)-[r2:has_obj]->(o:Object)".replace("e:", obj_alias["event"][0]+":").replace("o:", obj_alias["object"][0]+":")
@@ -51,6 +51,19 @@ def create_match_phrase(from_phrase, obj_alias):
 
     if len(obj_alias["object"]) > 1:
         match_phrase += ", (e)-[r3:has_obj]->(o2:Object)".replace("(e)", "(" + obj_alias["event"][0] + ")").replace("o2:", obj_alias["object"][1]+":")
+    
+    if is_frame_query:
+        qtype = ""
+        for key in obj_alias:
+            if select_phrase in obj_alias[key]:
+                qtype = key
+
+        if qtype == "event":
+            match_phrase += ", (v)-[rf:has_frame]->(f:frame)-[rf1:has_event]->(e)".replace("(e)", "(" + select_phrase + ")")
+        else:
+            match_phrase += ", (v)-[rf:has_frame]->(f:frame)-[rf1:has_object]->(o)".replace("(o)", "(" + select_phrase + ")")
+    
+
     return match_phrase
 
 def create_where_phrase(where_phrase, obj_alias):
@@ -73,7 +86,10 @@ def create_where_phrase(where_phrase, obj_alias):
         where_phrase = re.sub(r'video="(.*?)"', repl, where_phrase)
     return " WHERE " + where_phrase
 
-def create_return_phrase(select_phrase):
+def create_return_phrase(select_phrase, is_frame_query):
+    if is_frame_query:
+        return " RETURN f, rf1 "
+
     return " RETURN " + select_phrase
 
 def process_query(query):
@@ -87,17 +103,27 @@ def process_query(query):
         o_type, alias = sp.split(" ")
         obj_alias[o_type].append(alias)
 
-    #print(from_phrase)
-    match_phrase = create_match_phrase(from_phrase, obj_alias)
+    match_phrase = create_match_phrase(from_phrase, obj_alias, select_phrase, False)
     where_phrase = create_where_phrase(where_phrase, obj_alias)
-    return_phrase = create_return_phrase(select_phrase)
+    return_phrase = create_return_phrase(select_phrase, False)
     cy_q = match_phrase + where_phrase + return_phrase
-    return cy_q
+
+    where_phrase = find_where_phrase(query) #Clearing previous where_phrase
+
+    match_phrase = create_match_phrase(from_phrase, obj_alias, select_phrase, True)
+    where_phrase = create_where_phrase(where_phrase, obj_alias)
+    return_phrase = create_return_phrase(select_phrase, True)
+    vid_q = match_phrase + where_phrase + return_phrase
+
+
+    return cy_q, vid_q
 
 for i in range(len(qs)):
     q = qs[i]
-    print(q)
+    print(q + "\n")
     eq = eqs[i]
-    print(eq)
-    print(process_query(qs[i]))
+    print(eq + "\n")
+    cy_q, vid_q = process_query(qs[i])
+    print(cy_q + "\n")
+    print(vid_q + "\n")
     print(50 * "*")
