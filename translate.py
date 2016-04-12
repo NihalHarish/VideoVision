@@ -92,7 +92,27 @@ def create_return_phrase(select_phrase, is_frame_query):
 
     return " RETURN " + select_phrase
 
-def process_query(query):
+def video_query(query):
+    obj_alias = defaultdict(list)
+    select_phrase = find_select_phrase(query)
+    from_phrase = find_from_phrase(query)
+    where_phrase = find_where_phrase(query)
+
+    for sp in from_phrase.strip().split(","):
+        sp = sp.strip()
+        o_type, alias = sp.split(" ")
+        obj_alias[o_type].append(alias)
+
+    match_phrase = create_match_phrase(from_phrase, obj_alias, select_phrase, True)
+    where_phrase = create_where_phrase(where_phrase, obj_alias)
+    return_phrase = create_return_phrase(select_phrase, True)
+    vid_q = match_phrase + where_phrase + return_phrase
+
+
+    return vid_q
+
+
+def node_query(query):
     obj_alias = defaultdict(list)
     select_phrase = find_select_phrase(query)
     from_phrase = find_from_phrase(query)
@@ -108,22 +128,15 @@ def process_query(query):
     return_phrase = create_return_phrase(select_phrase, False)
     cy_q = match_phrase + where_phrase + return_phrase
 
-    where_phrase = find_where_phrase(query) #Clearing previous where_phrase
-
-    match_phrase = create_match_phrase(from_phrase, obj_alias, select_phrase, True)
-    where_phrase = create_where_phrase(where_phrase, obj_alias)
-    return_phrase = create_return_phrase(select_phrase, True)
-    vid_q = match_phrase + where_phrase + return_phrase
-
-
-    return cy_q, vid_q
+    return cy_q
 
 for i in range(len(qs)):
     q = qs[i]
     print(q + "\n")
     eq = eqs[i]
     print(eq + "\n")
-    cy_q, vid_q = process_query(qs[i])
+    cy_q = node_query(qs[i])
     print(cy_q + "\n")
+    vid_q = video_query(qs[i])
     print(vid_q + "\n")
     print(50 * "*")
