@@ -1,0 +1,62 @@
+<html>
+<head>
+	<title>UI</title>
+	<script>
+
+	var button,query,xhr1,xhr2,visual,video;
+
+	function init(){
+		button = document.getElementById("submit");
+		query = document.getElementById("query");
+		xhr1 = new XMLHttpRequest();
+		xhr2 = new XMLHttpRequest();
+		visual = document.getElementById("visualization");
+		video = document.getElementById("video");
+	}
+	
+
+	function run_query(){
+		if(query.value!="" || query.value!=null){
+			xhr1.onreadystatechange = function(){
+				if(xhr1.status==200 && xhr1.readyState==4){
+					visual.innerHTML = xhr1.responseText;
+					// document.write(xhr.responseText);
+				}
+			}
+			xhr1.open("POST","http://localhost:5000/nodeQuery",true);
+			xhr1.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhr1.send("query="+encodeURI(query.value));
+
+			xhr2.onreadystatechange = function(){
+				if(xhr2.status==200 && xhr2.readyState==4){
+					video.innerHTML = xhr2.response;
+				}
+			}
+			xhr2.open("POST","http://localhost:5000/videoQuery",true);
+			xhr2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhr2.setRequestHeader('Accept', 'application/json');
+			xhr2.send("query="+encodeURI(query.value));
+		}
+		else{
+			alert("Empty query");
+		}
+	}
+
+	
+
+
+	</script>
+
+</head>
+<body onload="init();">
+	<table style="align-center:true">
+		<tr>
+			<td width="400px"><input type = "text" id="query" autofocus style="width:445px"></td>
+			<td><input type = "button" id="submit" value="RUN" onclick="run_query()" style="margin-left:20px;"></td>
+		</tr>
+		<tr>
+			<td><div id="visualization" style="padding:20px; color:red; border:2px solid green; width:400px; height:300px;"></div></td>
+			<td><div id="video" style="padding:20px; border:2px solid green; width:400px; height:300px;margin-left:20px;"></div></td>
+		</tr>
+	</table>
+</body>
