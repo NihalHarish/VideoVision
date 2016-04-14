@@ -1,7 +1,0 @@
-{"nodes":
-  [{"title":"Apollo 13","label":"movie"},{"title":"Kevin Bacon","label":"actor"},
-   {"title":"Tom Hanks","label":"actor"},{"title":"Gary Sinise","label":"actor"},
-   {"title":"Ed Harris","label":"actor"},{"title":"Bill Paxton","label":"actor"}],
- "links":
-  [{"source":1,"target":0},{"source":2,"target":0},{"source":3,"target":0},
-   {"source":4,"target":0},{"source":5,"target":0}]}
