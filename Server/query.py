@@ -13,6 +13,14 @@ import json
 
 app = Flask(__name__,static_url_path='')
 
+
+@app.after_request
+def after_request(response):
+  response.headers.add('Access-Control-Allow-Origin', '*')
+  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+  return response
+
 @app.route("/")
 def root():
     return app.send_static_file('ui.html')
@@ -20,7 +28,7 @@ def root():
 @app.route('/nodeQuery',methods=['POST'])
 def process_node_query():
 	data = request.form['query']
-	node_cypher = translate.node_query(data)
+	node_cypher = translate.video_query(data)
 	return node_cypher
 
 @app.route('/videoQuery',methods=['POST'])

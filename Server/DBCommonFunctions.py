@@ -17,6 +17,12 @@ def execute_video_query(query):
 	if result is None:
 		return videos
 	result.sort(frame_comparator)
+
+	# print r[0]['data']['name'],r[1]['data']['id'],r[2]['data']['frame_start'],r[2]['data']['frame_end']
+
+	# for r in result:
+	# 	print r[1]['data']['id'],r[2]['data']['frame_start'],r[2]['data']['frame_end']
+
 	for r in result:
 		vid_name = r[0]['data']['name']
 		if vid_name not in videos.keys():
@@ -35,4 +41,16 @@ def execute_video_query(query):
 					videos[vid_name]['objects'][obj_id][-1]['end'] = f
 				else:
 					videos[vid_name]['objects'][obj_id].append({'start':None,'end':None})
-	return videos
+	results = []
+	for video in videos.keys():
+		for node in videos[video]['objects'].keys():
+			for clip in videos[video]['objects'][node]:
+				d={}
+				d['video'] = video
+				d['node'] = node
+				d['start'] = clip['start']
+				d['end'] = clip['end']
+				results.append(d)
+	return results
+
+	

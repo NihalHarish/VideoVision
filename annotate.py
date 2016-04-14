@@ -22,7 +22,7 @@ for fname in files:
         if currline == len(lines):
             break
         line = lines[currline]
-        oid, dur, frame_num, x, y, w, h, dummy = map(int, line.split(" "))
+        oid, dur, frame_num, x, y, w, h, dummy = map(eval, line.split(" "))
         cap.set(cv2.CAP_PROP_POS_FRAMES, frame_num)
         flag, frame = cap.read()
         print("*"*50)
