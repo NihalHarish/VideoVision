@@ -28,7 +28,7 @@ def root():
 @app.route('/nodeQuery',methods=['POST'])
 def process_node_query():
 	data = request.form['query']
-	node_cypher = translate.video_query(data)
+	node_cypher = translate.node_query2(data)
 	return node_cypher
 
 @app.route('/videoQuery',methods=['POST'])

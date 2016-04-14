@@ -90,7 +90,7 @@ def create_return_phrase(select_phrase, is_frame_query):
     if is_frame_query:
         return " RETURN v, "+select_phrase+", f, rf1 "
 
-    return " RETURN " + select_phrase
+    return " RETURN v" + select_phrase+", rf1"
 
 def video_query(query):
     obj_alias = defaultdict(list)
